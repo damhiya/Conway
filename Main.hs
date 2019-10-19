@@ -70,12 +70,15 @@ set ps u = go 0 0 ps u where
     dy = y' - y
     u' = setFocus2 v . focus dx dy $ u 
 
+outerp :: (a -> b -> c) -> [a] -> [b] -> [[c]]
+outerp f xs ys = [f x <$> ys | x <- xs]
+
 showU2 :: (Int,Int) -> (Int,Int) -> U2 Bool -> String
 showU2 (x,y) (x',y') u = out where
   convert True  = "##"
   convert False = "  "
 
-  xss = map (\(x,y) -> extract $ focus x y u) <$> [(,_y) <$> [x..x'] | _y <-[y..y']] 
+  xss = outerp (\y x -> extract $ focus x y u) [y..y'] [x..x']
   ls  = reverse $ "":((concat . map convert) <$> xss)
   _:out = concat $ (map ('\n':) ls)
 
